@@ -1,0 +1,48 @@
+{% extends "campusmap.html" %}
+
+{% block display %}
+	<br>
+	<br>
+      <h2> Destination: {{ bld }} </h2>
+      {% for i in directions %}
+      <p> {{ i|safe }} </p>
+      <hr>
+      {% endfor %}
+{% endblock %}
+
+{% block maproute %}
+      GeoMarker = new GeolocationMarker();
+      GeoMarker.setCircleOptions({visible: false});
+      GeoMarker.setMap(map);
+      
+      directionsService.route({
+        origin: "{{ cur }}",
+        destination: "{{ coords }}",
+        travelMode: 'WALKING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          directionsDisplay.setDirections(response);
+        } else {
+          window.alert('Directions request failed due to ' + status);
+        }
+      });
+      
+{% endblock %}
+
+{% block time %}
+    document.getElementById('txt').innerHTML=h+":"+m+":"+s;
+    var travelTime = parseInt("{{tl}}");
+    var timeLeft = 30 - m;
+    var arrival = timeLeft - travelTime
+    if(arrival < 10){
+      document.getElementById('warning').style.visibility="visible";
+      if(arrival < 0){
+        document.getElementById('warning').style.background="red";
+        document.getElementById('warning').innerHTML="RUN! " + "You'll be there: " + arrival * -1 + " mins late!";
+      }
+      else{
+        document.getElementById('warning').style.background="orange";
+        document.getElementById('warning').innerHTML="You'll be there: " + arrival + " mins early";
+      }
+    }
+{% endblock %}
